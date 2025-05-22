@@ -1,0 +1,10 @@
+.vscode/
+data/
+data_old/
+images_damiano/
+savings/
+savings_old/
+wandb/
+prova.ipynb
+TODO.md
+visualizing.ipynb
