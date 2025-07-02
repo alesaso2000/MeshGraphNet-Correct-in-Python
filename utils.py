@@ -68,97 +68,27 @@ def move_graph_(graph: Data, device: torch.device) -> None:
 
 
 
-def get_freest_gpu():
-    result = subprocess.check_output(
-        ['nvidia-smi', '--query-gpu=memory.free', '--format=csv,nounits,noheader'],
-        encoding='utf-8'
-    )
-    # List of free memory per GPU
-    memory_free = [int(x) for x in result.strip().split('\n')]
-    best_gpu = max(range(len(memory_free)), key=lambda i: memory_free[i])
-    return f'cuda:{best_gpu}'
+# def get_freest_gpu():
+#     result = subprocess.check_output(
+#         ['nvidia-smi', '--query-gpu=memory.free', '--format=csv,nounits,noheader'],
+#         encoding='utf-8'
+#     )
+#     # List of free memory per GPU
+#     memory_free = [int(x) for x in result.strip().split('\n')]
+#     best_gpu = max(range(len(memory_free)), key=lambda i: memory_free[i])
+#     return f'cuda:{best_gpu}'
 
 
-def get_device(metadata):
-    if torch.cuda.is_available():
-        if metadata['device'] == 'most_free':
-            try:
-                device = get_freest_gpu()
-            except:
-                device = 'cuda:2'  # default on cuda:2 if the process fails
-        else:
-            davice = metadata['device']
-    else:
-        device = 'cpu'
-    return device
+# def get_device(metadata):
+#     if torch.cuda.is_available():
+#         if metadata['device'] == 'most_free':
+#             try:
+#                 device = get_freest_gpu()
+#             except:
+#                 device = 'cuda:2'  # default on cuda:2 if the process fails
+#         else:
+#             davice = metadata['device']
+#     else:
+#         device = 'cpu'
+#     return device
 
-
-
-
-# def get_most_free_gpu_index():
-#     """
-#     Finds the index of the NVIDIA GPU with the most free memory using nvidia-smi.
-
-#     Requires the nvidia-smi command-line tool to be installed and in the system's PATH.
-
-#     Returns:
-#         int: The index (0, 1, 2, ...) of the GPU with the most free memory.
-#         Returns -1 if nvidia-smi fails, no GPUs are found, or output cannot be parsed.
-#     """
-#     # Command to query free memory for all GPUs, formatted as CSV, no header, no units (gives MiB)
-#     command = "nvidia-smi --query-gpu=memory.free --format=csv,noheader,nounits"
-#     try:
-#         # Execute the command
-#         result = subprocess.run(
-#             command,
-#             shell=True,        # Allows running the command through the shell
-#             check=True,        # Raises CalledProcessError if command returns non-zero exit code
-#             stdout=subprocess.PIPE, # Capture standard output
-#             stderr=subprocess.PIPE, # Capture standard error
-#             universal_newlines=True # Decode stdout/stderr as text (UTF-8 by default)
-#         )
-
-#         # Get the output and strip leading/trailing whitespace
-#         output = result.stdout.strip()
-
-#         # If the output is empty, something went wrong or no GPUs found
-#         if not output:
-#             print("Error: nvidia-smi returned empty output. No GPUs detected or driver issue?")
-#             return -1
-
-#         # Split the output into lines (one per GPU) and convert memory to integers
-#         free_memory_list = [int(mem) for mem in output.split('\n')]
-
-#         # Check if we actually got memory values
-#         if not free_memory_list:
-#              print("Error: Could not parse free memory values from nvidia-smi output.")
-#              return -1
-
-#         # Find the index of the GPU with the maximum free memory
-#         # enumerate provides (index, value) pairs
-#         # max() finds the pair with the largest value (memory) using the key
-#         # operator.itemgetter(1) tells max to compare based on the second element of the pair (the memory value)
-#         gpu_index, max_free_memory = max(enumerate(free_memory_list), key=operator.itemgetter(1))
-
-#         # Alternatively, without operator module:
-#         # gpu_index = max(range(len(free_memory_list)), key=lambda i: free_memory_list[i])
-#         # max_free_memory = free_memory_list[gpu_index] # If you need the value too
-
-#         print(f"GPU Free Memory (MiB): {free_memory_list}") # Optional: print memory for debugging
-#         return gpu_index
-
-#     except FileNotFoundError:
-#         print("Error: 'nvidia-smi' command not found.")
-#         print("Please ensure NVIDIA drivers and the toolkit are properly installed and 'nvidia-smi' is in your system's PATH.")
-#         return -1
-#     except subprocess.CalledProcessError as e:
-#         print(f"Error executing nvidia-smi: {e}")
-#         print(f"stderr: {e.stderr}")
-#         return -1
-#     except ValueError:
-#         print(f"Error: Could not convert nvidia-smi memory output to integers.")
-#         print(f"Raw output:\n{output}")
-#         return -1
-#     except Exception as e:
-#         print(f"An unexpected error occurred: {e}")
-#         return -1

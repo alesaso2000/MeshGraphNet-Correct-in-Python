@@ -7,9 +7,9 @@ from torch_geometric.loader import DataLoader
 from models import MeshGraphNet, MeshGraphNetCorrect, MyMeshGraphNet
 from dataset_definition import MyOwnDataset
 from normalization import Normalizer, warm_up_normalizer
-from train_functions import define_optimizer_scheduler, training_step, get_val_loss, plot_losses
-from utils import create_node_mask, get_device
-from config import node_types_to_train, parse_args, create_saving_filename
+from train_functions import define_optimizer_scheduler, training_step, get_val_loss#, plot_losses
+from utils import create_node_mask
+from config import node_types_to_train, parse_args
 
 
 def setup_experiment(metadata) -> tuple:
@@ -62,11 +62,13 @@ def setup_experiment(metadata) -> tuple:
     # Move model to device and compile
     print('defining and compiling model')
     model = model.to(metadata['device'])
+
+    # Compiling the model, for some reason, makes it so if I load the state dict back in, the performances are very degraded
     # model = torch.compile(model)
     # # Perform initial forward pass to actually compile
     # sample_graph = sample_graph.to(metadata['device'])
     # model(sample_graph)
-    print('model compiled')
+    # print('model compiled')
 
     # Define optimizer and scheduler
     optimizer, scheduler = define_optimizer_scheduler(

@@ -1,11 +1,11 @@
-import os, pickle
+"""
+This saves the timesteps of a rollout that can then be used to make a video
+"""
+
+import os
 from typing import List, Dict
 
 import torch
-from torch_geometric.loader import DataLoader
-import torch.nn as nn
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
 from plot_utils import plot_field
 import pandas as pd
 
@@ -13,11 +13,10 @@ import copy
 
 from models import MeshGraphNet, MeshGraphNetCorrect, MyMeshGraphNet
 from dataset_definition import MyOwnDataset
-from utils import create_node_mask, get_freest_gpu
-from config import node_types_to_train
 from plot_utils import get_ordered_body_coords
 
-device = get_freest_gpu()
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+print(f'using {device} as the device')
 
 def do_rollout(model, dataset, geom=50):
     graph = dataset.get_graph(which=(geom,0)).to(device)
